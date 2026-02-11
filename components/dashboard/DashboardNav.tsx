@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { TrendingUp, BarChart3, Package, FileText, HelpCircle, LogOut, Menu, X, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import PremiumComingSoon from '@/components/PremiumComingSoon'
+import { motion } from 'framer-motion'
 import { logout } from '@/app/actions/auth'
 import { toast } from 'sonner'
 
@@ -48,7 +50,10 @@ export function DashboardNav() {
       </button>
 
       {/* Sidebar */}
-      <aside
+      <motion.aside
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.28 }}
         className={`fixed left-0 top-0 h-screen w-64 bg-slate-900 border-r border-slate-800 p-6 transform transition-transform duration-300 z-40 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } md:translate-x-0`}
@@ -79,9 +84,9 @@ export function DashboardNav() {
 
         <div className="pt-4 border-t border-slate-800 space-y-2">
           {user && !user.is_premium ? (
-            <Link href="/pricing/upgrade">
+            <PremiumComingSoon>
               <Button className="w-full bg-yellow-500 text-black justify-start">Upgrade to Premium</Button>
-            </Link>
+            </PremiumComingSoon>
           ) : (
             <div className="text-sm text-slate-300">{user?.is_premium ? 'Premium Member' : ''}</div>
           )}
@@ -96,7 +101,7 @@ export function DashboardNav() {
             {loggingOut ? 'Logging out...' : 'Logout'}
           </Button>
         </div>
-      </aside>
+      </motion.aside>
 
       {/* Close sidebar when clicking outside on mobile */}
       {isOpen && (

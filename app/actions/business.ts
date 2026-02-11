@@ -28,7 +28,10 @@ type ItemData = {
 
 async function getUserId() {
   const cookieStore = await cookies()
-  return cookieStore.get('user_id')?.value
+  const userId = cookieStore.get('user_id')?.value
+  if (!userId) return null
+  // If user IDs are numeric (BIGINT), convert to Number for DB comparisons
+  return /^[0-9]+$/.test(userId) ? Number(userId) : userId
 }
 
 export async function createBusiness(businessData: BusinessData) {
@@ -39,6 +42,8 @@ export async function createBusiness(businessData: BusinessData) {
     return { success: false, error: 'User not authenticated' }
   }
 
+  console.log('[Business] createBusiness called for user_id:', userId, 'businessData:', businessData)
+
   try {
     const { data, error } = await supabase
       .from('businesses')
@@ -48,6 +53,8 @@ export async function createBusiness(businessData: BusinessData) {
       })
       .select()
       .single()
+
+    console.log('[Business] createBusiness result:', { data, error })
 
     if (error) {
       return { success: false, error: error.message }
@@ -96,12 +103,16 @@ export async function getBusiness() {
     return null
   }
 
+  console.log('[Business] getBusiness called for user_id:', userId)
+
   try {
     const { data, error } = await supabase
       .from('businesses')
       .select('*')
       .eq('user_id', userId)
       .maybeSingle()
+
+    console.log('[Business] getBusiness query result:', { data, error })
 
     if (error && error.code !== 'PGRST116') {
       console.error('[Business] Error fetching business:', error)
@@ -259,6 +270,8 @@ export async function addExpense(businessId: string, expenseData: {
 }) {
   const supabase = await createClient()
 
+  console.log('[Expenses] addExpense called for businessId:', businessId, 'expenseData:', expenseData)
+
   try {
     const { data, error } = await supabase
       .from('expenses')
@@ -268,6 +281,8 @@ export async function addExpense(businessId: string, expenseData: {
       })
       .select()
       .single()
+
+      console.log('[Expenses] addExpense result:', { data, error })
 
     if (error) {
       return { success: false, error: error.message }

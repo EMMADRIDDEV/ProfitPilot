@@ -272,11 +272,32 @@ export async function loginWithEmail(email: string, password: string) {
       maxAge: 30 * 24 * 60 * 60,
     })
 
-    return {
-      success: true,
-      message: 'Login successful',
-      userId: user.id,
-      redirectUrl: '/dashboard/setup',
+    // Determine whether the user already has a business
+    try {
+      const { data: business } = await supabase
+        .from('businesses')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      const hasBusiness = !!business
+
+      return {
+        success: true,
+        message: 'Login successful',
+        userId: user.id,
+        requiresSetup: !hasBusiness,
+        redirectUrl: hasBusiness ? '/dashboard' : '/dashboard/setup',
+      }
+    } catch (err) {
+      console.error('[Auth] Error checking business for user:', err)
+      return {
+        success: true,
+        message: 'Login successful',
+        userId: user.id,
+        requiresSetup: true,
+        redirectUrl: '/dashboard/setup',
+      }
     }
   } catch (error) {
     console.error('[Auth] Login error:', error)
@@ -382,12 +403,32 @@ export async function loginWithGoogle(
       maxAge: 30 * 24 * 60 * 60,
     })
 
-    return {
-      success: true,
-      message: 'Google login successful',
-      userId: user.id,
-      requiresSetup: !user.email_verified, // If they just created account, they need setup
-      redirectUrl: '/dashboard/setup',
+    // Check if user already has a business and redirect appropriately
+    try {
+      const { data: business } = await supabase
+        .from('businesses')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      const hasBusiness = !!business
+
+      return {
+        success: true,
+        message: 'Google login successful',
+        userId: user.id,
+        requiresSetup: !hasBusiness,
+        redirectUrl: hasBusiness ? '/dashboard' : '/dashboard/setup',
+      }
+    } catch (err) {
+      console.error('[Auth] Error checking business for user (google):', err)
+      return {
+        success: true,
+        message: 'Google login successful',
+        userId: user.id,
+        requiresSetup: true,
+        redirectUrl: '/dashboard/setup',
+      }
     }
   } catch (error) {
     console.error('[Auth] Google login error:', error)

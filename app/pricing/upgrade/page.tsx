@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
+import PremiumComingSoon from '@/components/PremiumComingSoon'
 
 export default function UpgradePage() {
   const [user, setUser] = useState<any>(null)
@@ -22,26 +23,8 @@ export default function UpgradePage() {
       return
     }
 
-    setLoading(true)
-    try {
-      const res = await fetch('/api/paystack/initiate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email }),
-      })
-
-      const data = await res.json()
-      if (data?.success && data.authorization_url) {
-        window.location.href = data.authorization_url
-      } else {
-        toast.error(data?.error || 'Failed to start payment')
-      }
-    } catch (error) {
-      console.error(error)
-      toast.error('Payment initialization failed')
-    } finally {
-      setLoading(false)
-    }
+    // Open the "coming soon" modal instead of starting payment for now
+    // The modal is handled via the PremiumComingSoon component trigger below.
   }
 
   return (
@@ -56,9 +39,9 @@ export default function UpgradePage() {
           <Input value={user?.email || ''} readOnly className="mt-1" />
         </div>
 
-        <Button onClick={handleUpgrade} className="w-full bg-white text-black" disabled={loading}>
-          {loading ? 'Redirecting to payment...' : 'Pay ₦9,999 / month with Paystack'}
-        </Button>
+        <PremiumComingSoon>
+          <Button className="w-full bg-white text-black">Pay ₦9,999 / month</Button>
+        </PremiumComingSoon>
       </div>
     </div>
   )

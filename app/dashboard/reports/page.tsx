@@ -67,11 +67,20 @@ export default function ReportsPage() {
       toast.error('Please fill in all required fields')
       return
     }
+    if (!business?.id) {
+      toast.error('No business selected')
+      console.error('[Expenses] No business id present when adding expense', { business, formData })
+      return
+    }
+
+    console.log('[Reports] handleAddExpense called with', { businessId: business.id, formData })
 
     try {
       const result = await addExpense(business.id, formData)
 
-      if (result.success) {
+      console.log('[Reports] addExpense result:', result)
+
+      if (result?.success) {
         toast.success('Expense recorded successfully!')
         setDialogOpen(false)
         setFormData({
@@ -83,7 +92,8 @@ export default function ReportsPage() {
         })
         loadData()
       } else {
-        toast.error(result.error)
+        console.error('[Reports] addExpense returned error:', result?.error)
+        toast.error(result?.error || 'Failed to record expense')
       }
     } catch (error) {
       console.error('[Expenses] Error:', error)
@@ -230,11 +240,11 @@ export default function ReportsPage() {
                 </CardContent>
               </Card>
             </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-slate-700">
+            <DialogContent className="bg-slate-800 border-slate-700 max-w-md w-full max-h-[85vh] overflow-auto sm:rounded-lg">
               <DialogHeader>
                 <DialogTitle className="text-white">Record an Expense</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleAddExpense} className="space-y-4">
+              <form onSubmit={handleAddExpense} className="space-y-4 p-4">
                 <div>
                   <Label className="text-slate-300">Date</Label>
                   <Input
@@ -283,13 +293,28 @@ export default function ReportsPage() {
                     type="number"
                     step="0.01"
                     value={formData.amount}
-                    onChange={(e) =>
-                      setFormData({ ...formData, amount: parseFloat(e.target.value) })
-                    }
+                    onChange={(e) => {
+                      const v = parseFloat(e.target.value)
+                      setFormData({ ...formData, amount: Number.isNaN(v) ? 0 : v })
+                    }}
                     className="bg-slate-700 border-slate-600 text-white mt-1"
                     placeholder="0.00"
                     required
                   />
+                </div>
+                <div>
+                  <Label className="text-slate-300">Payment Method</Label>
+                  <select
+                    value={formData.payment_method}
+                    onChange={(e) =>
+                      setFormData({ ...formData, payment_method: e.target.value })
+                    }
+                    className="w-full bg-slate-700 border border-slate-600 text-white rounded mt-1 px-3 py-2"
+                  >
+                    <option value="cash">Cash</option>
+                    <option value="card">Card</option>
+                    <option value="transfer">Bank Transfer</option>
+                  </select>
                 </div>
                 <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
                   Record Expense

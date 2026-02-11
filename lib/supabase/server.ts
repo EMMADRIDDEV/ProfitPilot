@@ -5,8 +5,10 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js'
  * Always create a new client within each function when using it.
  */
 export async function createClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  )
+  // Prefer the service role key for server-side operations when available.
+  // This bypasses Row Level Security for trusted server actions.
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const key = serviceRoleKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+  return createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key)
 }

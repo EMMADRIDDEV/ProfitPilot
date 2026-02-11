@@ -17,10 +17,11 @@ export default function DashboardLayout({
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const accessToken = localStorage.getItem('profitpilot_access_token')
-        const businessId = localStorage.getItem('profitpilot_business_id')
+        // Verify session via server (reads httpOnly cookies)
+        const res = await fetch('/api/me')
+        const data = await res.json()
 
-        if (!accessToken || !businessId) {
+        if (!data || !data.user) {
           router.push('/login')
           return
         }

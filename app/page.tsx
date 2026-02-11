@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import PremiumComingSoon from '@/components/PremiumComingSoon'
 import { BarChart3, TrendingUp, Package, PieChart, Zap, Lock } from 'lucide-react'
 
 export default function Home() {
@@ -120,9 +121,9 @@ export default function Home() {
               </ul>
 
               <div className="mt-6">
-                <Link href="/pricing/upgrade">
+                <PremiumComingSoon>
                   <Button id="upgrade-paystack-btn" className="w-full bg-white text-black">Start Premium</Button>
-                </Link>
+                </PremiumComingSoon>
               </div>
             </div>
           </div>
