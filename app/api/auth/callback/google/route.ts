@@ -5,7 +5,6 @@
 // 3. Implement the full OAuth flow
 
 import { NextRequest, NextResponse } from 'next/server'
-import fetch from 'node-fetch'
 import { loginWithGoogle } from '@/app/actions/auth'
 
 export async function GET(request: NextRequest) {

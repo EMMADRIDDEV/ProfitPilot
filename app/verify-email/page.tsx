@@ -1,7 +1,9 @@
-'use client'
+"use client"
+
+export const dynamic = 'force-dynamic'
 
 import React, { useState, useEffect } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { verifyEmail, resendVerificationCode } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,16 +19,17 @@ export default function VerifyEmailPage() {
   const [verified, setVerified] = useState(false)
   const [resending, setResending] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
-    // Check if there's a code in URL
-    const urlCode = searchParams.get('code')
+    // Check if there's a code in URL (client-side only)
+    if (typeof window === 'undefined') return
+    const urlParams = new URL(window.location.href).searchParams
+    const urlCode = urlParams.get('code')
     if (urlCode) {
       setCode(urlCode)
       handleVerify(urlCode)
     }
-  }, [searchParams])
+  }, [])
 
   const handleVerify = async (verificationCode?: string) => {
     const codeToVerify = verificationCode || code
