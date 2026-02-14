@@ -10,5 +10,14 @@ export async function createClient() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   const key = serviceRoleKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
+  // Validate required environment variables and fail fast with a clear message
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    throw new Error('Missing environment variable: NEXT_PUBLIC_SUPABASE_URL')
+  }
+
+  if (!key) {
+    throw new Error('Missing Supabase key: set SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  }
+
   return createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key)
 }
