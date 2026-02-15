@@ -2,6 +2,7 @@ import React from "react"
 import type { Metadata } from 'next'
 import './globals.css'
 import ClientMotionWrapper from '@/components/ClientMotionWrapper'
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata: Metadata = {
   title: 'ProfitPilot - Business Management Software',
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <ClientMotionWrapper>{children}</ClientMotionWrapper>
+        <Analytics />
       </body>
     </html>
   )
