@@ -2,7 +2,7 @@ import React from "react"
 import type { Metadata } from 'next'
 import './globals.css'
 import ClientMotionWrapper from '@/components/ClientMotionWrapper'
-import { Analytics } from '@vercel/analytics/next'
+import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
   title: 'ProfitPilot - Business Management Software',
