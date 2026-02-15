@@ -44,6 +44,8 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    console.debug('[Register] handleRegister called', { fullName, email, password, confirmPassword, loading })
+
     if (!validateForm()) {
       return
     }
@@ -196,6 +198,7 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 disabled={!fullName || !email || !password || !confirmPassword || loading}
+                onClick={() => console.debug('[Register] submit clicked', { fullName, email, loading })}
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
               >
                 {loading ? 'Creating Account...' : 'Create Account'}
