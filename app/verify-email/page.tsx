@@ -135,6 +135,16 @@ export default function VerifyEmailPage() {
             <CardDescription className="text-slate-400 text-center">
               Enter the verification code sent to your email address
             </CardDescription>
+            <div
+              role="alert"
+              className="mt-3 bg-yellow-600/10 border-l-4 border-yellow-400 p-3 rounded text-yellow-200 text-sm"
+            >
+              <strong className="block font-medium">Important:</strong>
+              <span>
+                If you don't receive the verification email within a few minutes, please check your Spam/Junk
+                folder. If it's not there, use the "Send" button below to resend the verification code.
+              </span>
+            </div>
           </CardHeader>
 
           <CardContent>
