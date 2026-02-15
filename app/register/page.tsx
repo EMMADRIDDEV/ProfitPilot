@@ -79,6 +79,17 @@ export default function RegisterPage() {
         setTimeout(() => {
           router.push(`/verify-email?email=${email}`)
         }, 1000)
+      } else if (result.alreadyExists) {
+        // If user exists but not verified, guide them to resend verification
+        if (result.requiresVerification) {
+          toast.error('Email already registered but not verified. Redirecting to verify page...')
+          setTimeout(() => {
+            router.push(`/verify-email?email=${email}`)
+          }, 800)
+        } else {
+          toast.error('Email already registered. Please login or reset your password.')
+        }
+        setLoading(false)
       } else {
         toast.error(result.error || 'Registration failed')
         setLoading(false)

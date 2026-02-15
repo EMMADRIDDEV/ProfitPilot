@@ -76,15 +76,18 @@ export async function registerUser(
       return { success: false, error: 'Password must be at least 8 characters long' }
     }
 
-    // Check if user already exists
+    // Check if user already exists (include email verification state)
     const { data: existingUser } = await supabase
       .from('users')
-      .select('id')
+      .select('id, email_verified')
       .eq('email', email.toLowerCase())
       .maybeSingle()
 
     if (existingUser) {
-      return { success: false, error: 'User with this email already exists' }
+      if (!existingUser.email_verified) {
+        return { success: false, error: 'Email already registered but not verified', alreadyExists: true, requiresVerification: true }
+      }
+      return { success: false, error: 'User with this email already exists', alreadyExists: true, requiresVerification: false }
     }
 
     // Hash password

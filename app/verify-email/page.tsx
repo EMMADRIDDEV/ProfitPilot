@@ -4,7 +4,7 @@ export const dynamic = 'force-dynamic'
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { verifyEmail, resendVerificationCode } from '@/app/actions/auth'
+import { verifyEmail } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -70,8 +70,14 @@ export default function VerifyEmailPage() {
 
     setResending(true)
     try {
-      const result = await resendVerificationCode(email)
-      
+      const res = await fetch('/api/auth/resend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      const result = await res.json()
+
       if (result.success) {
         toast.success('Verification code sent to your email!')
       } else {
