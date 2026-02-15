@@ -1,4 +1,3 @@
-import { updateSession } from '@/lib/supabase/proxy'
 import { type NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
@@ -24,7 +23,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  return await updateSession(request)
+  // Avoid importing server-only modules in Edge middleware.
+  // We do not update sessions here; server routes handle session maintenance.
+  return NextResponse.next()
 }
 
 export const config = {
