@@ -17,7 +17,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login">
-              <Button variant="outline" className="border-slate-600 hover:bg-slate-800 bg-transparent">
+              <Button size="md" className="bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold px-4 py-2 rounded-lg shadow-md hover:from-blue-600 hover:to-blue-700">
                 Sign In
               </Button>
             </Link>
