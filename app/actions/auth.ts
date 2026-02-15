@@ -59,6 +59,7 @@ export async function registerUser(
   fullName: string,
   password: string
 ) {
+  console.log('[Auth] registerUser called for:', email)
   const supabase = await createClient()
 
   try {

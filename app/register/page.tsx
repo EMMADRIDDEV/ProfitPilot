@@ -1,7 +1,6 @@
-'use client'
+"use client"
 
 import React, { useState } from 'react'
-import { registerUser } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -52,11 +51,29 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const result = await registerUser(email.toLowerCase(), fullName, password)
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.toLowerCase(), fullName, password }),
+      })
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => '')
+        console.error('[Register] network error', res.status, text)
+        toast.error(`Registration failed (${res.status})`)
+        setLoading(false)
+        return
+      }
+
+      const result = await res.json().catch((err) => {
+        console.error('[Register] invalid json response', err)
+        return { success: false, error: 'Invalid server response' }
+      })
+
+      console.debug('[Register] response', result)
 
       if (result.success) {
         toast.success(result.message || 'Registration successful! Check your email for verification code.')
-        
         setTimeout(() => {
           router.push(`/verify-email?email=${email}`)
         }, 1000)
