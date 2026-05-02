@@ -43,19 +43,12 @@ ProfitPilot is a comprehensive business management platform designed for ambitio
 ### 1. Landing Page
 Visit the landing page to learn about ProfitPilot and explore its features.
 
-### 2. Purchase Access
-- Click "Manage Business" to proceed
-- You'll be directed to the login page
-- If you don't have an access code, click "Buy Access Code"
-- Complete the payment of ₦20,000 via Paystack
-- Receive your 8-character access code
-
-### 3. Login
+### 2. Login
 - Enter your 8-character access code
 - No email or password required
 - Enjoy secure, simple authentication
 
-### 4. Business Setup
+### 3. Business Setup
 On your first login, set up your business:
 - Business name
 - Business type
@@ -63,21 +56,13 @@ On your first login, set up your business:
 - Currency preference
 - Initial settings
 
-### 5. Dashboard Access
+### 4. Dashboard Access
 After setup, access the main dashboard with:
 - Daily sales tracking
 - Inventory management
 - Financial reports
 - Business analytics
 - Help and tutorials
-
-## Access Code Format
-
-Your access code is an 8-character alphanumeric code:
-- Format: `XXXXXXXX` (e.g., `ABC12345`)
-- Unique to your account
-- Never share with anyone
-- Keep it secure and backed up
 
 ## Navigation
 
@@ -91,11 +76,7 @@ Your access code is an 8-character alphanumeric code:
 
 ## Pricing
 
-**One-Time Payment**: ₦20,000
-- Full access to all features
-- 1-year validity
-- Premium support
-- Regular updates
+Free for now
 
 ## Security
 
@@ -129,15 +110,6 @@ For help and support:
 
 ## Frequently Asked Questions
 
-**Q: How do I reset my access code?**
-A: Contact support through the Help section.
-
-**Q: What happens after one year?**
-A: You'll need to renew your subscription to continue using ProfitPilot.
-
-**Q: Can I upgrade my plan?**
-A: Currently, we offer one premium plan. Contact support for custom enterprise solutions.
-
 **Q: Is my data secure?**
 A: Yes, we use industry-standard encryption and security practices.
 
@@ -153,7 +125,7 @@ A: Yes, exports are available in the Reports section.
 ## Version
 
 **Current Version**: 1.0.0
-**Last Updated**: February 2024
+**Last Updated**: Febuary 2024
 
 ---
 
