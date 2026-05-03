@@ -20,29 +20,36 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('[Login] Starting login process...', { email })
     setLoading(true)
 
     try {
-      const { data, error } = await authClient.signIn.email({
+      console.log('[Login] Calling authClient.signIn.email...')
+      const response = await authClient.signIn.email({
         email: email.toLowerCase(),
         password: password,
         callbackURL: "/dashboard",
       });
 
-      if (error) {
-        console.error('[Login] Error:', error);
-        toast.error(error.message || 'Login failed');
+      console.log('[Login] Better Auth response:', response)
+
+      if (response.error) {
+        console.error('[Login] Login error object:', response.error);
+        toast.error(response.error.message || 'Login failed');
         setLoading(false);
         return;
       }
 
+      console.log('[Login] Success! Data:', response.data)
       toast.success('Login successful!');
+      
       setTimeout(() => {
+        console.log('[Login] Executing router.push(/dashboard)...')
         router.push('/dashboard');
       }, 500);
-    } catch (error) {
-      console.error('[Login] Error:', error);
-      toast.error('An error occurred during login');
+    } catch (error: any) {
+      console.error('[Login] Unexpected exception:', error);
+      toast.error(`An error occurred: ${error.message || 'Unknown error'}`);
       setLoading(false);
     }
   }

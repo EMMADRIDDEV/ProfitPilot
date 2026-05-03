@@ -46,36 +46,43 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    console.debug('[Register] handleRegister called', { fullName, email, password, confirmPassword, loading })
+    console.log('[Register] Starting registration process...', { email })
 
     if (!validateForm()) {
+      console.log('[Register] Validation failed')
       return
     }
 
     setLoading(true)
 
     try {
-      const { data, error } = await authClient.signUp.email({
+      console.log('[Register] Calling authClient.signUp.email...')
+      const response = await authClient.signUp.email({
         email: email.toLowerCase(),
         password: password,
         name: fullName,
         callbackURL: "/dashboard",
       });
 
-      if (error) {
-        console.error('[Register] Error:', error);
-        toast.error(error.message || 'Registration failed');
+      console.log('[Register] Better Auth response:', response)
+
+      if (response.error) {
+        console.error('[Register] Registration error object:', response.error);
+        toast.error(response.error.message || 'Registration failed');
         setLoading(false);
         return;
       }
 
+      console.log('[Register] Success! Data:', response.data)
       toast.success('Registration successful! Redirecting...');
+      
       setTimeout(() => {
+        console.log('[Register] Executing router.push(/dashboard)...')
         router.push('/dashboard');
       }, 1000);
-    } catch (error) {
-      console.error('[Register] Error:', error);
-      toast.error('An error occurred during registration');
+    } catch (error: any) {
+      console.error('[Register] Unexpected exception:', error);
+      toast.error(`An error occurred: ${error.message || 'Unknown error'}`);
       setLoading(false);
     }
   }
