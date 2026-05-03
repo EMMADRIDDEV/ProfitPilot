@@ -1,5 +1,4 @@
 import { betterAuth } from "better-auth";
-import { pgAdapter } from "better-auth/adapters/pg";
 import { Pool } from "pg";
 
 const pool = new Pool({
@@ -10,7 +9,7 @@ const pool = new Pool({
 });
 
 export const auth = betterAuth({
-    database: pgAdapter(pool),
+    database: pool,
     emailAndPassword: {
         enabled: true,
     },
