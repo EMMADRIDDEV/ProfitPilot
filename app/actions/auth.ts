@@ -51,8 +51,18 @@ export async function registerUser(formData: any) {
   try {
     const { email, password, fullName } = formData
     
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.error('[AuthAction] Missing Supabase environment variables')
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    console.log('[AuthAction] Environment check:', { 
+      hasUrl: !!url, 
+      urlLength: url?.length,
+      hasKey: !!key,
+      keyLength: key?.length 
+    })
+
+    if (!url || !key || url.includes('your_supabase_url')) {
+      console.error('[AuthAction] Invalid or placeholder Supabase environment variables')
       return { success: false, error: 'Server configuration error' }
     }
 
