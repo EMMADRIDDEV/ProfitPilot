@@ -1,6 +1,6 @@
 'use server'
 
-import { createServersideClient as createClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { resend } from '@/lib/resend'
 

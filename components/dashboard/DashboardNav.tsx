@@ -8,7 +8,7 @@ import PremiumComingSoon from '@/components/PremiumComingSoon'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { logout } from '@/app/actions/auth'
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 

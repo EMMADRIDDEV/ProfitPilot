@@ -1,4 +1,4 @@
-import { createServersideClient as createClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {

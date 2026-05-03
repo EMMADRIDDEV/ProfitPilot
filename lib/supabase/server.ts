@@ -1,23 +1,32 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
-/**
- * Creates a Supabase client for server-side operations.
- * Always create a new client within each function when using it.
- */
-export async function createClient() {
-  // Prefer the service role key for server-side operations when available.
-  // This bypasses Row Level Security for trusted server actions.
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const key = serviceRoleKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+export function createClient() {
+  const cookieStore = cookies()
 
-  // Validate required environment variables and fail fast with a clear message
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-    throw new Error('Missing environment variable: NEXT_PUBLIC_SUPABASE_URL')
-  }
-
-  if (!key) {
-    throw new Error('Missing Supabase key: set SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY')
-  }
-
-  return createSupabaseClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key)
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options })
+          } catch (error) {
+            // This can be ignored if you have middleware refreshing sessions
+          }
+        },
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value: '', ...options })
+          } catch (error) {
+            // This can be ignored if you have middleware refreshing sessions
+          }
+        },
+      },
+    }
+  )
 }
