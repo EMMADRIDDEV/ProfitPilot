@@ -6,7 +6,7 @@ import { resend } from '@/lib/resend'
 
 export async function getCurrentUser() {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user }, error } = await supabase.auth.getUser()
     
     if (error || !user) {
@@ -29,7 +29,7 @@ export async function getBusiness() {
   const user = await getCurrentUser()
   if (!user) return null
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: business } = await supabase
     .from('businesses')
     .select('*')
@@ -40,7 +40,7 @@ export async function getBusiness() {
 }
 
 export async function logout() {
-  const supabase = createClient()
+  const supabase = await createClient()
   await supabase.auth.signOut()
   redirect('/login')
 }
@@ -56,7 +56,7 @@ export async function registerUser(formData: any) {
       return { success: false, error: 'Server configuration error' }
     }
 
-    const supabase = createClient()
+    const supabase = await createClient()
     console.log('[AuthAction] Supabase client created')
 
     const { data, error } = await supabase.auth.signUp({
@@ -94,7 +94,7 @@ export async function loginUser(formData: any) {
       return { success: false, error: 'Server configuration error' }
     }
 
-    const supabase = createClient()
+    const supabase = await createClient()
     console.log('[AuthAction] Supabase client created')
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -116,7 +116,7 @@ export async function loginUser(formData: any) {
 }
 
 export async function verifyEmailCode(email: string, code: string) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data, error } = await supabase.auth.verifyOtp({
     email,
     token: code,
@@ -131,7 +131,7 @@ export async function verifyEmailCode(email: string, code: string) {
 }
 
 export async function resendVerificationCode(email: string) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.auth.resend({
     type: 'signup',
     email,
