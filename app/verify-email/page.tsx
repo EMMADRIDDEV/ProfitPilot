@@ -1,16 +1,14 @@
 "use client"
 
-export const dynamic = 'force-dynamic'
-
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { verifyEmail } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
 import { TrendingUp, Mail, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { authClient } from '@/lib/auth-client'
 
 export default function VerifyEmailPage() {
   const [code, setCode] = useState('')
@@ -41,9 +39,11 @@ export default function VerifyEmailPage() {
 
     setLoading(true)
     try {
-      const result = await verifyEmail(codeToVerify)
+      const { data, error } = await authClient.verifyEmail({
+        token: codeToVerify
+      })
       
-      if (result.success) {
+      if (!error) {
         setVerified(true)
         toast.success('Email verified successfully!')
         
@@ -52,7 +52,7 @@ export default function VerifyEmailPage() {
           router.push('/dashboard/setup')
         }, 2000)
       } else {
-        toast.error(result.error || 'Verification failed')
+        toast.error(error.message || 'Verification failed')
       }
     } catch (error) {
       console.error('[VerifyEmail] Error:', error)
@@ -70,18 +70,15 @@ export default function VerifyEmailPage() {
 
     setResending(true)
     try {
-      const res = await fetch('/api/auth/resend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+      const { data, error } = await authClient.sendVerificationEmail({
+        email: email,
+        callbackURL: "/dashboard/setup"
       })
 
-      const result = await res.json()
-
-      if (result.success) {
-        toast.success('Verification code sent to your email!')
+      if (!error) {
+        toast.success('Verification link sent to your email!')
       } else {
-        toast.error(result.error || 'Failed to resend code')
+        toast.error(error.message || 'Failed to resend email')
       }
     } catch (error) {
       console.error('[ResendCode] Error:', error)
