@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import { TrendingUp, Lock, Mail } from 'lucide-react'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth-client'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -53,6 +54,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center justify-center px-4">
+      <LoadingOverlay isVisible={loading} message="Signing you in..." />
+      
       {/* Back to Home */}
       <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-300 hover:text-white transition">
         <TrendingUp className="w-5 h-5" />

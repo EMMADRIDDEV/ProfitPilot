@@ -9,6 +9,7 @@ import { TrendingUp, Mail, User, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { authClient } from '@/lib/auth-client'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('')
@@ -85,6 +86,8 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center justify-center px-4 py-8">
+      <LoadingOverlay isVisible={loading} message="Creating your account..." />
+      
       {/* Back to Home */}
       <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-300 hover:text-white transition">
         <TrendingUp className="w-5 h-5" />

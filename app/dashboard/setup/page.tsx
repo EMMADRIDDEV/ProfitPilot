@@ -10,6 +10,7 @@ import { createBusiness } from '@/app/actions/business'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 
 export default function SetupPage() {
   const [loading, setLoading] = useState(false)
@@ -70,6 +71,7 @@ export default function SetupPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 px-4 py-12">
+      <LoadingOverlay isVisible={loading} message="Setting up your business..." />
       <div className="max-w-2xl mx-auto">
         <Card className="bg-slate-800/50 border-slate-700 backdrop-blur">
           <CardHeader className="space-y-2">
