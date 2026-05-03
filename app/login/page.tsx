@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useRouter } from 'next/navigation'
 import { TrendingUp, Lock, Mail } from 'lucide-react'
 import { toast } from 'sonner'
-import { authClient } from '@/lib/auth-client'
+import { loginUser } from '@/app/actions/auth'
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 
 export default function LoginPage() {
@@ -20,37 +20,29 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('[Login] Starting login process...', { email })
     setLoading(true)
 
     try {
-      console.log('[Login] Calling authClient.signIn.email...')
-      const response = await authClient.signIn.email({
+      const response = await loginUser({
         email: email.toLowerCase(),
         password: password,
-        callbackURL: "/dashboard",
-      });
+      })
 
-      console.log('[Login] Better Auth response:', response)
-
-      if (response.error) {
-        console.error('[Login] Login error object:', response.error);
-        toast.error(response.error.message || 'Login failed');
-        setLoading(false);
-        return;
+      if (!response.success) {
+        toast.error(response.error || 'Login failed')
+        setLoading(false)
+        return
       }
 
-      console.log('[Login] Success! Data:', response.data)
-      toast.success('Login successful!');
+      toast.success('Login successful!')
       
       setTimeout(() => {
-        console.log('[Login] Executing router.push(/dashboard)...')
-        router.push('/dashboard');
-      }, 500);
+        router.push('/dashboard')
+      }, 500)
     } catch (error: any) {
-      console.error('[Login] Unexpected exception:', error);
-      toast.error(`An error occurred: ${error.message || 'Unknown error'}`);
-      setLoading(false);
+      console.error('[Login] Error:', error)
+      toast.error('An unexpected error occurred')
+      setLoading(false)
     }
   }
 

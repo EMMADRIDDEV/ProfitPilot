@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { TrendingUp, Mail, User, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { authClient } from '@/lib/auth-client'
+import { registerUser } from '@/app/actions/auth'
 import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 
 export default function RegisterPage() {
@@ -46,44 +46,34 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    console.log('[Register] Starting registration process...', { email })
-
-    if (!validateForm()) {
-      console.log('[Register] Validation failed')
-      return
-    }
+    if (!validateForm()) return
 
     setLoading(true)
 
     try {
-      console.log('[Register] Calling authClient.signUp.email...')
-      const response = await authClient.signUp.email({
+      const response = await registerUser({
         email: email.toLowerCase(),
         password: password,
-        name: fullName,
-        callbackURL: "/dashboard",
-      });
+        fullName: fullName,
+      })
 
-      console.log('[Register] Better Auth response:', response)
-
-      if (response.error) {
-        console.error('[Register] Registration error object:', response.error);
-        toast.error(response.error.message || 'Registration failed');
-        setLoading(false);
-        return;
+      if (!response.success) {
+        toast.error(response.error || 'Registration failed')
+        setLoading(false)
+        return
       }
 
-      console.log('[Register] Success! Data:', response.data)
-      toast.success('Registration successful! Redirecting...');
+      toast.success('Registration successful! Please check your email to verify your account.')
       
+      // We don't redirect immediately because they need to verify email
+      // But we can redirect to a verification pending page or login
       setTimeout(() => {
-        console.log('[Register] Executing router.push(/dashboard)...')
-        router.push('/dashboard');
-      }, 1000);
+        router.push('/login?message=Check your email to verify your account')
+      }, 3000)
     } catch (error: any) {
-      console.error('[Register] Unexpected exception:', error);
-      toast.error(`An error occurred: ${error.message || 'Unknown error'}`);
-      setLoading(false);
+      console.error('[Register] Error:', error)
+      toast.error('An unexpected error occurred')
+      setLoading(false)
     }
   }
 

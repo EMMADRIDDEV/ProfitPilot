@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { AlertCircle, LogOut, Save } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { logout } from '@/app/actions/auth'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -32,11 +33,8 @@ export default function SettingsPage() {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('profitpilot_access_token')
-    localStorage.removeItem('profitpilot_business_id')
-    localStorage.removeItem('profitpilot_user_has_paid')
-    router.push('/login')
+  const handleLogout = async () => {
+    await logout()
   }
 
   return (

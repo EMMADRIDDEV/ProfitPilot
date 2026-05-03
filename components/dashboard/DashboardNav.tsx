@@ -7,15 +7,25 @@ import { Button } from '@/components/ui/button'
 import PremiumComingSoon from '@/components/PremiumComingSoon'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
-import { authClient } from '@/lib/auth-client'
+import { logout } from '@/app/actions/auth'
+import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export function DashboardNav() {
   const [isOpen, setIsOpen] = useState(false)
+  const [user, setUser] = useState<any>(null)
   const [loggingOut, setLoggingOut] = useState(false)
   const router = useRouter()
-  const { data: session, isPending } = authClient.useSession()
-  const user = session?.user
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function getUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getUser()
+  }, [])
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -29,14 +39,8 @@ export function DashboardNav() {
   const handleLogout = async () => {
     setLoggingOut(true)
     try {
-      await authClient.signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            toast.success('Logged out successfully')
-            router.push('/login')
-          }
-        }
-      })
+      await logout()
+      toast.success('Logged out successfully')
     } catch (error) {
       toast.error('Failed to logout')
       setLoggingOut(false)
@@ -84,12 +88,12 @@ export function DashboardNav() {
         </nav>
 
         <div className="pt-4 border-t border-slate-800 space-y-2">
-          {user && !user.is_premium ? (
+          {user && !user?.user_metadata?.is_premium ? (
             <PremiumComingSoon>
               <Button className="w-full bg-yellow-500 text-black justify-start">Upgrade to Premium</Button>
             </PremiumComingSoon>
           ) : (
-            <div className="text-sm text-slate-300">{user?.is_premium ? 'Premium Member' : ''}</div>
+            <div className="text-sm text-slate-300">{user?.user_metadata?.is_premium ? 'Premium Member' : ''}</div>
           )}
 
           <Button 

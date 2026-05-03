@@ -1,24 +1,21 @@
-import { auth } from '@/lib/auth'
+import { createServersideClient as createClient } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: req.headers,
-    })
+    const supabase = createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
 
-    if (!session || !session.user) {
+    if (error || !user) {
       return NextResponse.json({ user: null })
     }
 
     return NextResponse.json({
       user: {
-        id: session.user.id,
-        email: session.user.email,
-        full_name: session.user.name,
-        // Map other fields as needed
-        is_premium: false, // Default for now
-        premium_expires_at: null,
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+        is_premium: user.user_metadata?.is_premium || false,
       },
     })
   } catch (error) {

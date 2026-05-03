@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createServersideClient as createClient } from '@/lib/supabase'
 import { getCurrentUser } from '@/app/actions/auth'
 
 type BusinessData = {

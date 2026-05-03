@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { TrendingUp, Mail, CheckCircle2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { authClient } from '@/lib/auth-client'
+import { verifyEmailCode, resendVerificationCode } from '@/app/actions/auth'
 
 export default function VerifyEmailPage() {
   const [code, setCode] = useState('')
@@ -37,22 +37,24 @@ export default function VerifyEmailPage() {
       return
     }
 
+    if (!email) {
+      toast.error('Please enter your email address to verify')
+      return
+    }
+
     setLoading(true)
     try {
-      const { data, error } = await authClient.verifyEmail({
-        token: codeToVerify
-      })
+      const response = await verifyEmailCode(email, codeToVerify)
       
-      if (!error) {
+      if (response.success) {
         setVerified(true)
         toast.success('Email verified successfully!')
         
-        // Redirect to dashboard setup after 2 seconds
         setTimeout(() => {
           router.push('/dashboard/setup')
         }, 2000)
       } else {
-        toast.error(error.message || 'Verification failed')
+        toast.error(response.error || 'Verification failed')
       }
     } catch (error) {
       console.error('[VerifyEmail] Error:', error)
@@ -70,15 +72,12 @@ export default function VerifyEmailPage() {
 
     setResending(true)
     try {
-      const { data, error } = await authClient.sendVerificationEmail({
-        email: email,
-        callbackURL: "/dashboard/setup"
-      })
+      const response = await resendVerificationCode(email)
 
-      if (!error) {
+      if (response.success) {
         toast.success('Verification link sent to your email!')
       } else {
-        toast.error(error.message || 'Failed to resend email')
+        toast.error(response.error || 'Failed to resend email')
       }
     } catch (error) {
       console.error('[ResendCode] Error:', error)
