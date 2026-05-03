@@ -46,47 +46,73 @@ export async function logout() {
 }
 
 export async function registerUser(formData: any) {
-  const { email, password, fullName } = formData
-  const supabase = createClient()
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        full_name: fullName,
-      },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`,
-    },
-  })
-
-  if (error) {
-    return { success: false, error: error.message }
-  }
-
-  // Use Resend to send a custom welcome/confirmation email if needed
-  // Note: Supabase already sends a confirmation email if enabled in dashboard.
-  // If you want to use Resend INSTEAD of Supabase's default, you'd need to handle
-  // the verification flow manually or use a Supabase hook.
-  // For now, we'll let Supabase handle the core verification link.
+  console.log('[AuthAction] registerUser called', { email: formData.email })
   
-  return { success: true, data }
+  try {
+    const { email, password, fullName } = formData
+    
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error('[AuthAction] Missing Supabase environment variables')
+      return { success: false, error: 'Server configuration error' }
+    }
+
+    const supabase = createClient()
+    console.log('[AuthAction] Supabase client created')
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      console.error('[AuthAction] Supabase signUp error:', error.message)
+      return { success: false, error: error.message }
+    }
+
+    console.log('[AuthAction] Supabase signUp successful', { userId: data.user?.id })
+    return { success: true, data }
+  } catch (error: any) {
+    console.error('[AuthAction] Unexpected exception during registerUser:', error)
+    return { success: false, error: error.message || 'An unexpected error occurred' }
+  }
 }
 
 export async function loginUser(formData: any) {
-  const { email, password } = formData
-  const supabase = createClient()
+  console.log('[AuthAction] loginUser called', { email: formData.email })
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+  try {
+    const { email, password } = formData
+    
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error('[AuthAction] Missing Supabase environment variables')
+      return { success: false, error: 'Server configuration error' }
+    }
 
-  if (error) {
-    return { success: false, error: error.message }
+    const supabase = createClient()
+    console.log('[AuthAction] Supabase client created')
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      console.error('[AuthAction] Supabase signIn error:', error.message)
+      return { success: false, error: error.message }
+    }
+
+    console.log('[AuthAction] Supabase signIn successful', { userId: data.user?.id })
+    return { success: true, data }
+  } catch (error: any) {
+    console.error('[AuthAction] Unexpected exception during loginUser:', error)
+    return { success: false, error: error.message || 'An unexpected error occurred' }
   }
-
-  return { success: true, data }
 }
 
 export async function verifyEmailCode(email: string, code: string) {
