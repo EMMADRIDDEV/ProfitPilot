@@ -1,26 +1,21 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { TrendingUp, BarChart3, Package, FileText, HelpCircle, LogOut, Menu, X, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import PremiumComingSoon from '@/components/PremiumComingSoon'
 import { motion } from 'framer-motion'
-import { logout } from '@/app/actions/auth'
 import { toast } from 'sonner'
+import { authClient } from '@/lib/auth-client'
+import { useRouter } from 'next/navigation'
 
 export function DashboardNav() {
   const [isOpen, setIsOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
-  const [user, setUser] = useState<any>(null)
-
-  // fetch current user to know premium status
-  useEffect(() => {
-    fetch('/api/me')
-      .then((r) => r.json())
-      .then((d) => setUser(d.user))
-      .catch(() => setUser(null))
-  }, [])
+  const router = useRouter()
+  const { data: session, isPending } = authClient.useSession()
+  const user = session?.user
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -34,8 +29,14 @@ export function DashboardNav() {
   const handleLogout = async () => {
     setLoggingOut(true)
     try {
-      await logout()
-      toast.success('Logged out successfully')
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success('Logged out successfully')
+            router.push('/login')
+          }
+        }
+      })
     } catch (error) {
       toast.error('Failed to logout')
       setLoggingOut(false)

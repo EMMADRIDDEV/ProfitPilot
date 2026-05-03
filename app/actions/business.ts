@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
+import { getCurrentUser } from '@/app/actions/auth'
 
 type BusinessData = {
   business_name: string
@@ -26,12 +26,10 @@ type ItemData = {
   supplier_contact?: string
 }
 
+
 async function getUserId() {
-  const cookieStore = await cookies()
-  const userId = cookieStore.get('user_id')?.value
-  if (!userId) return null
-  // If user IDs are numeric (BIGINT), convert to Number for DB comparisons
-  return /^[0-9]+$/.test(userId) ? Number(userId) : userId
+  const user = await getCurrentUser()
+  return user?.id || null
 }
 
 export async function createBusiness(businessData: BusinessData) {

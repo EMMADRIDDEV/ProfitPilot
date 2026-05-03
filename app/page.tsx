@@ -45,7 +45,7 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link href="/get-access-code">
+            <Link href="/register">
               <Button size="lg" className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white">
                 Manage Business
               </Button>
@@ -95,7 +95,7 @@ export default function Home() {
                 <li>Business analytics dashboard</li>
               </ul>
               <div className="mt-6">
-                <Link href="/get-access-code">
+                <Link href="/register">
                   <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-600">Start Free</Button>
                 </Link>
               </div>

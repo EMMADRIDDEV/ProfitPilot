@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { TrendingUp, Mail, User, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { authClient } from '@/lib/auth-client'
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('')
@@ -53,51 +54,28 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.toLowerCase(), fullName, password }),
-      })
+      const { data, error } = await authClient.signUp.email({
+        email: email.toLowerCase(),
+        password: password,
+        name: fullName,
+        callbackURL: "/dashboard",
+      });
 
-      if (!res.ok) {
-        const text = await res.text().catch(() => '')
-        console.error('[Register] network error', res.status, text)
-        toast.error(`Registration failed (${res.status})`)
-        setLoading(false)
-        return
+      if (error) {
+        console.error('[Register] Error:', error);
+        toast.error(error.message || 'Registration failed');
+        setLoading(false);
+        return;
       }
 
-      const result = await res.json().catch((err) => {
-        console.error('[Register] invalid json response', err)
-        return { success: false, error: 'Invalid server response' }
-      })
-
-      console.debug('[Register] response', result)
-
-      if (result.success) {
-        toast.success(result.message || 'Registration successful! Check your email for verification code.')
-        setTimeout(() => {
-          router.push(`/verify-email?email=${email}`)
-        }, 1000)
-      } else if (result.alreadyExists) {
-        // If user exists but not verified, guide them to resend verification
-        if (result.requiresVerification) {
-          toast.error('Email already registered but not verified. Redirecting to verify page...')
-          setTimeout(() => {
-            router.push(`/verify-email?email=${email}`)
-          }, 800)
-        } else {
-          toast.error('Email already registered. Please login or reset your password.')
-        }
-        setLoading(false)
-      } else {
-        toast.error(result.error || 'Registration failed')
-        setLoading(false)
-      }
+      toast.success('Registration successful! Redirecting...');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1000);
     } catch (error) {
-      console.error('[Register] Error:', error)
-      toast.error('An error occurred during registration')
-      setLoading(false)
+      console.error('[Register] Error:', error);
+      toast.error('An error occurred during registration');
+      setLoading(false);
     }
   }
 

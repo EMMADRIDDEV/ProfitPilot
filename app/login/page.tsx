@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { loginWithEmail } from '@/app/actions/auth'
 import { useRouter } from 'next/navigation'
 import { TrendingUp, Lock, Mail } from 'lucide-react'
 import { toast } from 'sonner'
+import { authClient } from '@/lib/auth-client'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -22,33 +22,27 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const result = await loginWithEmail(email.toLowerCase(), password)
-      console.log('[Login] Result:', result)
-      
-      if (result && result.success) {
-        console.log('[Login] Login successful, redirecting...')
-        toast.success(result.message || 'Login successful!')
-        
-        setTimeout(() => {
-          console.log('[Login] Calling router.push...')
-          router.push(result.redirectUrl || '/dashboard')
-        }, 200)
-      } else if (result?.requiresVerification) {
-        // Email not verified yet
-        toast.error(result.error || 'Please verify your email')
-        setTimeout(() => {
-          router.push(`/verify-email?email=${email}`)
-        }, 500)
-      } else {
-        const errorMsg = result?.error || 'Login failed'
-        console.error('[Login] Login failed:', errorMsg)
-        toast.error(errorMsg)
-        setLoading(false)
+      const { data, error } = await authClient.signIn.email({
+        email: email.toLowerCase(),
+        password: password,
+        callbackURL: "/dashboard",
+      });
+
+      if (error) {
+        console.error('[Login] Error:', error);
+        toast.error(error.message || 'Login failed');
+        setLoading(false);
+        return;
       }
+
+      toast.success('Login successful!');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 500);
     } catch (error) {
-      console.error('[Login] Error:', error)
-      toast.error('An error occurred during login')
-      setLoading(false)
+      console.error('[Login] Error:', error);
+      toast.error('An error occurred during login');
+      setLoading(false);
     }
   }
 
